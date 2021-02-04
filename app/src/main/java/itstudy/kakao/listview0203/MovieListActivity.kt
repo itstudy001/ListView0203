@@ -11,6 +11,7 @@ import android.os.Message
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -117,7 +118,8 @@ class MovieListActivity : AppCompatActivity() {
                         movie.thumbnail = item.getString("thumbnail")
                         movie.link = item.getString("link")
 
-                        movieList!!.add(movie)
+                        //맨 앞에 데이터를 추가
+                        movieList!!.add(0, movie)
 
 
                         i = i + 1
@@ -227,6 +229,25 @@ class MovieListActivity : AppCompatActivity() {
                 }
 
             })
+
+        //스와이프 레이아웃의 리프레시 이벤트 처리
+        val swipe_layout =
+            findViewById<SwipeRefreshLayout>(R.id.swipe_layout)
+        swipe_layout.setOnRefreshListener {
+            pageno = pageno + 1
+            var cnt = 10
+            if(pageno * cnt >= count!!){
+                Log.e("message", "더이상 데이터가 존재하지 않습니다.")
+            }else{
+                if(th == null){
+                    downloadview?.visibility = View.VISIBLE
+                    th = MovieThread()
+                    th!!.start()
+                    swipe_layout.isRefreshing = false
+                }
+            }
+
+        }
 
 
     }
